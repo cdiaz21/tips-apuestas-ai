@@ -1,0 +1,34 @@
+name: Generar Tips Diarios
+
+on:
+  schedule:
+    - cron: "0 8 * * *"  # Todos los días a las 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clonar el repositorio
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Instalar dependencias
+      run: pip install openai
+
+    - name: Ejecutar script
+      run: python generar_tips.py
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    - name: Subir archivo generado
+      run: |
+        git config --global user.name "cdiaz21"
+        git config --global user.email "cdiaz21@users.noreply.github.com"
+        git add tips.json
+        git commit -m "
